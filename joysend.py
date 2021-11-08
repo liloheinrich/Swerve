@@ -1,9 +1,8 @@
+# the pi is meant to be the server, the laptop the client
 # https://coderedirect.com/questions/597581/how-to-get-usb-controller-gamepad-to-work-with-python
 
-from drive import drive, clamp
 import joystickapi
 import time
-import math
 
 # 0: select 
 # 1: left joystick press
@@ -30,12 +29,6 @@ import math
 # axis 3/R: right joystick up-down axis
 
 
-# square to circle joystick correction
-# https://www.xarg.org/2017/07/how-to-map-a-square-to-a-circle/
-def map(x, y):
-    return x * math.sqrt(1 - y*y/2.0), y * math.sqrt(1 - x*x/2.0)
-
-
 print("start")
 deadband = 500
 # default_joyvalue = -256
@@ -53,7 +46,8 @@ for id in range(num):
 else:
     print("no gamepad detected")
 
-run = ret
+# todo: might want to do more with timing, ex loop timing or time/duration of/between readings
+run = ret # todo: make loop start and stop upon certain buttons
 while run:
     time.sleep(rate)
     ret, info = joystickapi.joyGetPosEx(id)
@@ -63,20 +57,13 @@ while run:
         if info.dwButtons:
             print("buttons: ", btns)
         if any([abs(v) > deadband for v in axisXYZR[0:3]]):
-            # print("axis:", axisXYZR)
-
-            x_s_raw = clamp(axisXYZR[0] / max_joyvalue, -1.0, 1.0)
-            y_s_raw = clamp(axisXYZR[1] / max_joyvalue, -1.0, 1.0)
-            r_s = clamp(axisXYZR[2] / max_joyvalue, -1.0, 1.0)
-            x_s, y_s = map(x_s_raw, y_s_raw)
-            # print("x_s, y_s, r_s", round(x_s, 4), round(y_s, 4), round(r_s, 4))
-
-            res_dir, res_mag, res_ang = drive(x_s, y_s, r_s)
-            res_mag = [round(r, 3) for r in res_mag]
-            res_ang = [round(math.degrees(a), 1) for a in res_ang]
-            print("res_dir, res_mag, res_ang", res_dir, res_mag, res_ang)
-
+            print("axis:", axisXYZR)
         else:
             print("inactive, under deadband")
+
+        # todo: this is where the sending code would go
+        # use sockets
+        # https://stackoverflow.com/questions/59853852/sending-data-from-pc-to-raspberry-pi-using-python
+    # todo: re^: or here for a const hz rate, not too sure...
 
 print("end")
