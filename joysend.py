@@ -29,6 +29,18 @@ import time
 # axis 3/R: right joystick up-down axis
 
 
+# the pi is meant to be the server, the laptop the client
+# Level 1: https://raspberrypi.stackexchange.com/questions/13425/server-and-client-between-pc-and-raspberry-pi
+# Level 2: https://notenoughtech.com/raspberry-pi/rpi-socket-protocol/
+# Level 3: http://www.python-exemplary.com/index_en.php?inhalt_links=navigation_en.inc.php&inhalt_mitte=raspi/en/communication.inc.php
+
+import socket
+
+HOST = '10.27.91.11' # Enter IP or Hostname of your server
+PORT = 12345 # Pick an open Port (1000+ recommended), must match the server port
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((HOST,PORT))
+
 print("start")
 deadband = 500
 # default_joyvalue = -256
@@ -46,10 +58,13 @@ for id in range(num):
 else:
     print("no gamepad detected")
 
+
+
 # todo: might want to do more with timing, ex loop timing or time/duration of/between readings
 run = ret # todo: make loop start and stop upon certain buttons
 while run:
     time.sleep(rate)
+
     ret, info = joystickapi.joyGetPosEx(id)
     if ret:
         btns = [(1 << i) & info.dwButtons != 0 for i in range(caps.wNumButtons)][0:17]
@@ -58,8 +73,14 @@ while run:
             print("buttons: ", btns)
         if any([abs(v) > deadband for v in axisXYZR[0:3]]):
             print("axis:", axisXYZR)
-        else:
-            print("inactive, under deadband")
+        # else:
+            # print("inactive, under deadband")
+
+        s.send(str.encode(str(btns) + str(axisXYZR)))
+        reply = s.recv(1024).decode()
+        if reply == 'Terminate':
+            break
+        print(reply)
 
         # todo: this is where the sending code would go
         # use sockets

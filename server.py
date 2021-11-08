@@ -30,20 +30,20 @@ print('Connected')
 # awaiting for message
 while True:
   data = conn.recv(1024)
-  print('I sent a message back in response to: ' + data) 
+  print('Data: ' + data) 
   reply = ''
 
   # process your message
-  if data == 'Hello':
-    reply = 'Hi, back!'
-  elif (data == 'This is important'):
-    reply = 'OK, I have done the important thing you have asked me!'
-  #and so on and on until...
-  elif data == 'quit':
+#   if data == 'Hello':
+#     reply = 'Hi, back!'
+#   elif (data == 'This is important'):
+#     reply = 'OK, I have done the important thing you have asked me!'
+#   el
+  if data == 'quit':
     conn.send('Terminating')
     break
   else:
-    reply = 'Unknown command'
+    reply = 'Received'
 
   # Sending reply
   conn.send(reply)
