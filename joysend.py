@@ -3,7 +3,9 @@
 
 import joystickapi
 import time
-
+import json 
+from drive import clamp
+import math
 # 0: select 
 # 1: left joystick press
 # 2: right joystick press
@@ -23,10 +25,10 @@ import time
 # 16: purple square left
 # 17: middle button clear
 
-# axis 0/X: left joystick R-L axis
-# axis 1/Y: left joystick up-down axis
-# axis 2/Z: right joystick R-L axis
-# axis 3/R: right joystick up-down axis
+# axis 0/X: left joystick R-L axis [direction and speed]
+# axis 1/Y: left joystick up-down axis [direction and speed]
+# axis 2/Z: right joystick R-L axis [rotation]
+# axis 3/R: right joystick up-down axis 
 
 
 # the pi is meant to be the server, the laptop the client
@@ -36,16 +38,22 @@ import time
 
 import socket
 
-HOST = '10.27.91.11' # Enter IP or Hostname of your server
+# HOST = '10.27.91.11' # Enter IP or Hostname of your server
+HOST = '10.3.141.1'
 PORT = 12345 # Pick an open Port (1000+ recommended), must match the server port
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST,PORT))
-
 print("start")
+
 deadband = 500
 # default_joyvalue = -256
 max_joyvalue = 32768
 rate = 0.1 # sleep between loops in seconds
+# create dictionary that we'll convert to json to send over
+
+def map(x, y):
+    return x * math.sqrt(1 - y*y/2.0), y * math.sqrt(1 - x*x/2.0)
+
 
 num = joystickapi.joyGetNumDevs()
 ret, caps, startinfo = False, None, None
@@ -64,19 +72,28 @@ else:
 run = ret # todo: make loop start and stop upon certain buttons
 while run:
     time.sleep(rate)
-
+    msg = []
     ret, info = joystickapi.joyGetPosEx(id)
     if ret:
         btns = [(1 << i) & info.dwButtons != 0 for i in range(caps.wNumButtons)][0:17]
         axisXYZR = [info.dwXpos-startinfo.dwXpos, info.dwYpos-startinfo.dwYpos, info.dwZpos-startinfo.dwZpos, info.dwRpos-startinfo.dwRpos]
         if info.dwButtons:
+
             print("buttons: ", btns)
         if any([abs(v) > deadband for v in axisXYZR[0:3]]):
-            print("axis:", axisXYZR)
+            # print("axis:", axisXYZR)
+
+            x_s_raw = clamp(axisXYZR[0] / max_joyvalue, -1.0, 1.0)
+            y_s_raw = clamp(axisXYZR[1] / max_joyvalue, -1.0, 1.0)
+            r_s = clamp(axisXYZR[2] / max_joyvalue, -1.0, 1.0)
+            print 
+            x_s, y_s = map(x_s_raw, y_s_raw)
+            msg = [round(x_s,4), round(y_s,4), round(r_s,4)]
+
         # else:
             # print("inactive, under deadband")
 
-        s.send(str.encode(str(btns) + str(axisXYZR)))
+        s.send(str.encode(str(msg)))
         reply = s.recv(1024).decode()
         if reply == 'Terminate':
             break
