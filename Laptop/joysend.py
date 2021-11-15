@@ -4,8 +4,8 @@
 import joystickapi
 import time
 import json 
-from drive import clamp
 import math
+
 # 0: select 
 # 1: left joystick press
 # 2: right joystick press
@@ -37,6 +37,9 @@ import math
 # Level 3: http://www.python-exemplary.com/index_en.php?inhalt_links=navigation_en.inc.php&inhalt_mitte=raspi/en/communication.inc.php
 
 import socket
+
+def clamp(n, minn, maxn):
+    return max(min(maxn, n), minn)
 
 # HOST = '10.27.91.11' # Enter IP or Hostname of your server
 HOST = '10.3.141.1'
@@ -86,14 +89,14 @@ while run:
             x_s_raw = clamp(axisXYZR[0] / max_joyvalue, -1.0, 1.0)
             y_s_raw = clamp(axisXYZR[1] / max_joyvalue, -1.0, 1.0)
             r_s = clamp(axisXYZR[2] / max_joyvalue, -1.0, 1.0)
-            print 
             x_s, y_s = map(x_s_raw, y_s_raw)
             msg = [round(x_s,4), round(y_s,4), round(r_s,4)]
 
         # else:
             # print("inactive, under deadband")
 
-        s.send(str.encode(str(msg)))
+        # s.send(str.encode(str(msg)))
+        s.send(str.encode(str(msg[1:len(msg)-1]))) # get rid of "[]" at start and end of array string
         reply = s.recv(1024).decode()
         if reply == 'Terminate':
             break

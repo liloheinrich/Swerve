@@ -1,6 +1,6 @@
 # https://coderedirect.com/questions/597581/how-to-get-usb-controller-gamepad-to-work-with-python
 
-from drive import drive, clamp
+from drive import drive
 import joystickapi
 import time
 import math
@@ -35,6 +35,8 @@ import math
 def map(x, y):
     return x * math.sqrt(1 - y*y/2.0), y * math.sqrt(1 - x*x/2.0)
 
+def clamp(n, minn, maxn):
+    return max(min(maxn, n), minn)
 
 print("start")
 deadband = 500
