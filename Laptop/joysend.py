@@ -51,7 +51,7 @@ print("start")
 deadband = 500
 # default_joyvalue = -256
 max_joyvalue = 32768
-rate = 0.1 # sleep between loops in seconds
+timeout = 0.05 # sleep between loops in seconds
 # create dictionary that we'll convert to json to send over
 
 def map(x, y):
@@ -70,12 +70,11 @@ else:
     print("no gamepad detected")
 
 
-
 # todo: might want to do more with timing, ex loop timing or time/duration of/between readings
 run = ret # todo: make loop start and stop upon certain buttons
 while run:
-    time.sleep(rate)
-    msg = []
+    time.sleep(timeout)
+    msg = [0.0, 0.0, 0.0]
     ret, info = joystickapi.joyGetPosEx(id)
     if ret:
         btns = [(1 << i) & info.dwButtons != 0 for i in range(caps.wNumButtons)][0:17]
@@ -84,19 +83,21 @@ while run:
 
             print("buttons: ", btns)
         if any([abs(v) > deadband for v in axisXYZR[0:3]]):
-            # print("axis:", axisXYZR)
+            print("axis:", axisXYZR)
 
             x_s_raw = clamp(axisXYZR[0] / max_joyvalue, -1.0, 1.0)
             y_s_raw = clamp(axisXYZR[1] / max_joyvalue, -1.0, 1.0)
             r_s = clamp(axisXYZR[2] / max_joyvalue, -1.0, 1.0)
             x_s, y_s = map(x_s_raw, y_s_raw)
-            msg = [round(x_s,4), round(y_s,4), round(r_s,4)]
+            msg = [round(x_s,3), round(y_s,3), round(r_s,3)]
 
-        # else:
+        else:
+            msg = [0.0, 0.0, 0.0]
             # print("inactive, under deadband")
 
         # s.send(str.encode(str(msg)))
-        s.send(str.encode(str(msg[1:len(msg)-1]))) # get rid of "[]" at start and end of array string
+        print("message to pi", msg)
+        s.send(str.encode(str(msg)))
         reply = s.recv(1024).decode()
         if reply == 'Terminate':
             break
