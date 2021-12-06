@@ -143,16 +143,6 @@ void executeParsedData() {
   servo2.write(servo2_angle);
   motor2_speed = motor2_input * motorspeed_scalar;
   drive_motor(motor2_speed, motor2_RPWM, motor2_LPWM);
-
-//    Serial.println("This is motor_speed and servo_angle");
-//    Serial.print(motor1_speed);
-//    Serial.print(", ");
-//    Serial.print(motor2_speed);
-//    Serial.print(", ");
-//    Serial.print(servo1_angle);
-//    Serial.print(", ");
-//    Serial.println(servo2_angle);
-//    Serial.println();
 }
 
 void drive_motor(float motor_speed, int RPWM_Output, int LPWM_Output) {
