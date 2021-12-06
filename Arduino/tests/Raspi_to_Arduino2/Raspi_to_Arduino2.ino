@@ -85,11 +85,11 @@ void parseData() {      // split the data into its parts
     strtokIndx = strtok(NULL, ","); // this continues where the previous call left off
     servo3_angle = atoi(strtokIndx);     // convert this part to an integer
 
-    strtokIndx = strtok(NULL, ","); // this continues where the previous call left off
-    servo3_angle = atoi(strtokIndx);     // convert this part to an integer
+    // strtokIndx = strtok(NULL, ","); // this continues where the previous call left off
+    // servo3_angle = atoi(strtokIndx);     // convert this part to an integer
 
-    strtokIndx = strtok(NULL, ","); // this continues where the previous call left off
-    servo4_angle = atoi(strtokIndx);     // convert this part to an integer
+    // strtokIndx = strtok(NULL, ","); // this continues where the previous call left off
+    // servo4_angle = atoi(strtokIndx);     // convert this part to an integer
 }
 
 //============
@@ -100,8 +100,10 @@ void showParsedData() {
     Serial.print(servo1_angle);
     Serial.print(", ");
     Serial.print(servo2_angle);
-    Serial.print(", ");
-    Serial.print(servo3_angle);
-    Serial.print(", ");
-    Serial.println(servo4_angle);
+    Serial.println();
+    
+    // Serial.print(", ");
+    // Serial.print(servo3_angle);
+    // Serial.print(", ");
+    // Serial.println(servo4_angle);
 }
