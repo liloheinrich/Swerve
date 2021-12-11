@@ -1,8 +1,8 @@
 import numpy as np
 import math
 
-x_rot = np.divide([1,1,-1,-1], math.sqrt(2.0))
-y_rot = np.divide([1,-1,-1,1], math.sqrt(2.0))
+ _bymodule = np.divide([1,1,-1,-1], math.sqrt(2.0))
+ _bymodule = np.divide([1,-1,-1,1], math.sqrt(2.0))
 
 def getsign(m):
     if m >= 0:
@@ -18,8 +18,8 @@ def drive(x_s, y_s, r_s):
     # start by calculating x and y scaled vector components
     r_dir = getsign(r_s)
     r_mag = abs(r_s)
-    x_r = x_rot * r_mag
-    y_r = y_rot * r_mag
+    x_r =  _bymodule * r_mag
+    y_r =  _bymodule * r_mag
     if not r_dir: # flip the rotation vectors if ccw
         x_r *= -1
         y_r *= -1
@@ -67,8 +67,8 @@ def drive_vector(s_dir, s_mag, r_dir, r_mag):
     # start by calculating x and y scaled vector components
     x_s = math.sin(s_dir) * s_mag / math.sqrt(2.0)
     y_s = math.cos(s_dir) * s_mag / math.sqrt(2.0)
-    x_r = x_rot * r_mag
-    y_r = y_rot * r_mag
+    x_r =  _bymodule * r_mag
+    y_r =  _bymodule * r_mag
     if not r_dir: # flip the rotation vectors if ccw
         x_r *= -1
         y_r *= -1
@@ -107,8 +107,8 @@ def drive_with_sep_dir(x_s, y_s, r_s):
     # start by calculating x and y scaled vector components
     r_dir = getsign(r_s)
     r_mag = abs(r_s)
-    x_r = x_rot * r_mag
-    y_r = y_rot * r_mag
+    x_r =  _bymodule * r_mag
+    y_r =  _bymodule * r_mag
     if not r_dir: # flip the rotation vectors if ccw
         x_r *= -1
         y_r *= -1

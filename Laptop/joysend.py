@@ -1,4 +1,6 @@
-# the pi is meant to be the server, the laptop the client
+# the pi is the server, the laptop the client
+# https://notenoughtech.com/raspberry-pi/rpi-socket-protocol/
+# http://www.python-exemplary.com/index_en.php?inhalt_links=navigation_en.inc.php&inhalt_mitte=raspi/en/communication.inc.php
 # https://coderedirect.com/questions/597581/how-to-get-usb-controller-gamepad-to-work-with-python
 
 import joystickapi
@@ -30,12 +32,6 @@ import math
 # axis 2/Z: right joystick R-L axis [rotation]
 # axis 3/R: right joystick up-down axis 
 
-
-# the pi is meant to be the server, the laptop the client
-# Level 1: https://raspberrypi.stackexchange.com/questions/13425/server-and-client-between-pc-and-raspberry-pi
-# Level 2: https://notenoughtech.com/raspberry-pi/rpi-socket-protocol/
-# Level 3: http://www.python-exemplary.com/index_en.php?inhalt_links=navigation_en.inc.php&inhalt_mitte=raspi/en/communication.inc.php
-
 import socket
 
 def clamp(n, minn, maxn):
@@ -51,7 +47,7 @@ print("start")
 deadband = 500
 # default_joyvalue = -256
 max_joyvalue = 32768
-timeout = 0.05 # sleep between loops in seconds
+timeout = 0.1 # sleep between loops in seconds
 # create dictionary that we'll convert to json to send over
 
 def map(x, y):
@@ -73,6 +69,10 @@ else:
 # todo: might want to do more with timing, ex loop timing or time/duration of/between readings
 run = ret # todo: make loop start and stop upon certain buttons
 while run:
+    # s.shutdown(socket.SHUT_RDWR)
+    # s.close()
+    # s.connect((HOST,PORT))
+
     time.sleep(timeout)
     msg = [0.0, 0.0, 0.0]
     ret, info = joystickapi.joyGetPosEx(id)
@@ -102,6 +102,7 @@ while run:
         if reply == 'Terminate':
             break
         print(reply)
+
 
         # todo: this is where the sending code would go
         # use sockets

@@ -1,6 +1,3 @@
-// Example 5 - Receive with start- and end-markers combined with parsing
-
-
 const byte numChars = 64;
 char receivedChars[numChars];
 char tempChars[numChars];        // temporary array for use when parsing
@@ -30,8 +27,8 @@ int motor1_RPWM = 3; // Arduino PWM output pin 5; connect to IBT-2 pin 1 (RPWM)
 int motor1_LPWM = 11; // Arduino PWM output pin 6; connect to IBT-2 pin 2 (LPWM)
 int motor2_RPWM = 5; 
 int motor2_LPWM = 6;
-int servo1_PWM = 10;
-int servo2_PWM = 9;
+int servo1_PWM = A1;
+int servo2_PWM = A0;
 //============
 
 boolean newData = false;
@@ -46,6 +43,7 @@ void setup() {
     pinMode(motor1_LPWM, OUTPUT);
     pinMode(motor2_RPWM, OUTPUT);
     pinMode(motor2_LPWM, OUTPUT);
+    set_speed_to_zero();
 //    Serial.println("This demo expects 5 pieces of data - float motor4_speed, and 4 integer servo angles");
 //    Serial.println("Enter data in this style <0.676, 12, 24, 171, 90>  ");
 //    Serial.println();
@@ -61,7 +59,7 @@ void loop() {
               // this temporary copy is necessary to protect the original data
               //   because strtok() used in parseData() replaces the commas with \0
           parseData();
-          showParsedData();
+//          showParsedData();
           executeParsedData();
           newData = false;
       }
@@ -143,16 +141,6 @@ void executeParsedData() {
   servo2.write(servo2_angle);
   motor2_speed = motor2_input * motorspeed_scalar;
   drive_motor(motor2_speed, motor2_RPWM, motor2_LPWM);
-
-//    Serial.println("This is motor_speed and servo_angle");
-//    Serial.print(motor1_speed);
-//    Serial.print(", ");
-//    Serial.print(motor2_speed);
-//    Serial.print(", ");
-//    Serial.print(servo1_angle);
-//    Serial.print(", ");
-//    Serial.println(servo2_angle);
-//    Serial.println();
 }
 
 void drive_motor(float motor_speed, int RPWM_Output, int LPWM_Output) {
@@ -164,4 +152,9 @@ void drive_motor(float motor_speed, int RPWM_Output, int LPWM_Output) {
     analogWrite(LPWM_Output, PWM_speed);
     analogWrite(RPWM_Output, 0);
   }
+}
+
+void set_speed_to_zero(){
+  drive_motor(0, motor1_RPWM, motor1_LPWM);
+  drive_motor(0, motor2_RPWM, motor2_LPWM);
 }
