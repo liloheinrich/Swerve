@@ -2,13 +2,11 @@
 # calculates the swerve math
 # sends commands to both arduinos
 
-
 import socket
 import serial
 import time
 import math
 from drive import drive
-
 
 # square to circle joystick correction
 # https://www.xarg.org/2017/07/how-to-map-a-square-to-a-circle/
@@ -17,6 +15,17 @@ def map(x, y):
 
 def clamp(n, minn, maxn):
     return max(min(maxn, n), minn)
+
+servo_angles_ranges = [[15,175], [13,178], [7,175], [16,170]]
+
+def mapFromTo(x,a,b,c,d):
+    # x:input value; 
+    # a,b:input range
+    # c,d:output range
+    # y:return value
+   y=(x-a)/(b-a)*(d-c)+c
+   return y
+
 
 deadband = 0.01
 # default_joyvalue = -256
@@ -48,19 +57,11 @@ ser1.flush()
 ser2 = serial.Serial('/dev/ttyACM1', 9600, timeout=1)
 ser2.flush()
 
-start_time = time.time()
-print("start_time", start_time)
-
 # waiting for message
 while True:
-    startloop_time = time.time()
-    print("startloop_time", startloop_time)
 
     data = conn.recv(1024)
     # print('Data: ' + data) 
-
-    now_time = time.time()
-    print("now_time", now_time)
 
     if data == 'quit':
         conn.send('Terminating')
@@ -90,37 +91,24 @@ while True:
             
             servo_angle += 90
             for i in range(4):
+
+                # convert servo angles to the right range
+                servo_angle = mapFromTo(servo_angle, 0, 180, servo_angles_ranges[i][0], servo_angles_ranges[i][1])
+
                 motor_speeds_arr[i] = motor_speed
                 servo_angles_arr[i] = servo_angle
 
-        beforesendmessage1_time = time.time()
-        print("beforesendmessage1_time", beforesendmessage1_time)
-
         arduino1_message = "["+str(round(motor_speeds_arr[0], 3))+","+str(round(motor_speeds_arr[1], 3))+","+str(int(servo_angles_arr[0]))+","+str(int(servo_angles_arr[1]))+"]"
-        print("message to arduino", arduino1_message)
+        # print("message to arduino", arduino1_message)
         ser1.write(bytes(arduino1_message))
 
-        beforesendmessage2_time = time.time()
-        print("beforesendmessage2_time", beforesendmessage2_time)
 
         arduino2_message = "["+str(round(motor_speeds_arr[2], 3))+","+str(round(motor_speeds_arr[3], 3))+","+str(int(servo_angles_arr[2]))+","+str(int(servo_angles_arr[3]))+"]"
-        print("message to arduino", arduino2_message)
+        # print("message to arduino", arduino2_message)
         ser2.write(bytes(arduino2_message))
-
-        afterendmessage2_time = time.time()
-        print("afterendmessage2_time", afterendmessage2_time)
 
     else:
         print("Data had len < 0", data)
-
-    endloop_time = time.time()
-    print("endloop_time", endloop_time)
-
-    line = ser1.readline().decode('utf-8').rstrip()
-    print("arduino returns " + str(line))
-
-    endend_time = time.time()
-    print("endend_time", endend_time)
 
     time.sleep(timeout)
   
