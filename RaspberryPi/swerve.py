@@ -17,7 +17,7 @@ def clamp(n, minn, maxn):
     return max(min(maxn, n), minn)
 
 #TODO
-wheel_speed_coefficient = 1.0
+wheel_speed_coefficient = 0.8
 
 #TODO
 servo_angles_ranges = [[8,173], [12,170], [11,167], [10,175]]
@@ -79,13 +79,13 @@ while True:
             x_s = joystick_readings[0]
             y_s = joystick_readings[1]
             r_s = joystick_readings[2]
-            print("x_s, y_s, r_s", x_s, y_s, r_s)
+            # print("x_s, y_s, r_s", x_s, y_s, r_s)
 
             res_mag, res_ang = drive(x_s, y_s, r_s)
             res_mag = [round(r, 3) for r in res_mag]
             res_ang = [round(math.degrees(a)) for a in res_ang]
-            print("res_mag", res_mag)
-            print("res_ang", res_ang)
+            # print("res_mag", res_mag)
+            # print("res_ang", res_ang)
             prev_res_ang = res_ang
         else:
             res_ang = prev_res_ang
@@ -103,10 +103,10 @@ while True:
                 servo_angles_arr[i] = mapRange(0, 180, res_ang[i], servo_angles_ranges[i][0], servo_angles_ranges[i][1]) # map 0 to 180 onto corrected range
             
         arduino1_message = "["+str(motor_speeds_arr[0])+","+str(motor_speeds_arr[1])+","+str(servo_angles_arr[0])+","+str(servo_angles_arr[1])+"]"
-        print("arduino1_message", arduino1_message)
+        # print("arduino1_message", arduino1_message)
         ser1.write(bytes(arduino1_message))
         arduino2_message = "["+str(motor_speeds_arr[2])+","+str(motor_speeds_arr[3])+","+str(servo_angles_arr[2])+","+str(servo_angles_arr[3])+"]"
-        print("arduino2_message", arduino2_message)
+        # print("arduino2_message", arduino2_message)
         ser2.write(bytes(arduino2_message))
 
     else:
