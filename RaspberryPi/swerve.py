@@ -16,10 +16,7 @@ def map(x, y):
 def clamp(n, minn, maxn):
     return max(min(maxn, n), minn)
 
-#TODO
 wheel_speed_coefficient = 0.8
-
-#TODO
 servo_angles_ranges = [[8,173], [12,170], [11,167], [10,175]]
 
 def mapRange(oldMin, oldMax, oldValue, newMin, newMax):
