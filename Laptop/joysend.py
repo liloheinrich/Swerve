@@ -102,11 +102,7 @@ while run:
         if reply == 'Terminate':
             break
         print(reply)
-
-
-        # todo: this is where the sending code would go
-        # use sockets
-        # https://stackoverflow.com/questions/59853852/sending-data-from-pc-to-raspberry-pi-using-python
-    # todo: re^: or here for a const hz rate, not too sure...
+        
+        # use sockets: https://stackoverflow.com/questions/59853852/sending-data-from-pc-to-raspberry-pi-using-python
 
 print("end")
